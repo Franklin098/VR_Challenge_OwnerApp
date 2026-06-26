@@ -17,21 +17,17 @@ registration, multi-property switcher, web surface, tests beyond the core domain
 
 ---
 
-## 0. Decision D0 — workspace shape (resolve before step 1)
+## 0. Decision D0 — workspace shape ✅ RESOLVED: npm workspaces
 
-The blueprint locks a **pnpm-workspace monorepo**; the scaffold is a single **npm** Expo app
-with an existing `package-lock.json`.
-
-**Recommendation: npm workspaces, not a pnpm conversion.**
+The blueprint originally locked a pnpm-workspace monorepo; the scaffold shipped as a single
+**npm** Expo app with an existing `package-lock.json`. **Decision: keep npm workspaces.**
 - The scaffold already resolved on npm; converting to pnpm risks the 5-minute cold-run for zero
   reviewer-visible benefit.
 - npm workspaces give the **same architectural proof** — a separate `packages/core` package
   with its own `package.json` and **zero React Native imports**, imported by the app via the
   workspace. That is what "genuinely shareable" means; the package manager is incidental.
 
-**Action:** if we accept this, update `OwnerView-Blueprint.md` decision #8 (pnpm → npm
-workspaces) with a one-line reason, per the "update the blueprint, don't drift" rule. If we
-keep pnpm, do the conversion as step 0 before anything else.
+Blueprint decision #8 has been updated (pnpm → npm workspaces) with the reason.
 
 Target layout either way:
 
@@ -89,7 +85,9 @@ Each step ends **runnable**. Stop and verify before moving on.
   `mock`).
 - **Done when:** hooks compile against the mock; an ephemeral console screen lists cases.
 
-### Step 4 — App shell + Face ID lock screen
+### Step 4 — App shell + theme + Face ID lock screen
+- Add `apps/mobile/theme.ts` from `design-tokens.md` (plain `as const` object, no theming lib).
+  Optionally load Inter via `@expo-google-fonts/inter`; system-font fallback is acceptable.
 - Wrap the app in `QueryClientProvider` + `GestureHandlerRootView` +
   `BottomSheetModalProvider` + `SafeAreaProvider`.
 - `AuthRepository` (mock): fake sign-in returns a fake refresh token → **SecureStore**

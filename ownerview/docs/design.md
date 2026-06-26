@@ -40,8 +40,11 @@ Case
   description: string
   estimatedCostCents: number     // money as integer cents; format in core
   currency: 'USD'
-  vendor: { name: string; company?: string }
-  property: { id: string; name: string; location: string }   // "Breckenridge, CO"
+  origin: 'pre_arrival_inspection' | 'post_departure_inspection'
+        | 'vacancy_check' | 'guest_report'   // LocalShield triple-tier inspections
+  assignee: { name: string; role: string }   // in-house team: "Andy Dinger · Maintenance Manager"
+  vendor?: { name: string; company: string } // optional external specialist (e.g. appliance tech)
+  property: { id: string; name: string; location: string }   // "Shock Hill Manor", "Breckenridge, CO"
   photos: string[]               // local bundled assets in mock (reliable cold-run)
   guestContext?: { nextCheckInISO: string } // drives urgency; "guest checks in Fri"
   createdAtISO: string
@@ -147,9 +150,26 @@ env flag (`EXPO_PUBLIC_DATA_SOURCE=mock | supabase`, default `mock`) selects ada
 | **Push notification** | APNs/FCM registration + payload              | **No real push in v1.** Deep link `ownerview://cases/:id` triggered by a **"Simulate push"** affordance (and a real URL on web). Demonstrates the _notify→deep-link→decide_ path; real registration is v-next. |
 | **Photos**            | Supabase Storage URLs                        | **Bundled local assets** in `apps/mobile/assets` — no network dependency, so the cold-run never waits on an image CDN.                                                                                         |
 
-**Seed data** (in `packages/core`, so web could reuse it): ~5 cases across Breckenridge / Park
-City / Tahoe, mixed statuses and categories, with the **$145 dishwasher + "guest checks in
-Fri"** as the hero case that the smart sort floats to the top.
+**Seed data** (in `packages/core`, so web could reuse it) — grounded in LocalVR's real
+portfolio and ops (in-house maintenance teams, LocalShield inspections). ~5–6 cases, mixed
+statuses/categories, across real properties:
+
+| Property | Location | Hero? | Example case |
+|---|---|---|---|
+| **Shock Hill Manor** | Breckenridge, CO | ★ | `appliance` · **$145 dishwasher repair**, flagged `pre_arrival_inspection`, **guest checks in Fri** — floats to top |
+| **West Vail Retreat** | Vail, CO | | `hvac` · furnace service before cold snap |
+| **Aerie Drive Estate** | Park City, UT | | `plumbing` · master-bath leak, `vacancy_check` |
+| **Adams Ranch Lodge** | Telluride, CO | | `electrical` · hot-tub GFCI, already `approved` |
+| **South Lake Escape** | Lake Tahoe, CA | | `general` · deck railing, `post_departure_inspection`, already `denied` (shows the note) |
+
+Assignees use real in-house framing (e.g. *Andy Dinger · Maintenance Manager*); `vendor` only on
+cases needing an external specialist. The hero ties the **pre-arrival inspection origin** to the
+**guest-check-in urgency** — both straight from LocalVR's actual workflow.
+
+**Images — note on sourcing:** the repo is public, so we **do not bundle LocalVR's own marketing
+photos** (their copyright). Mock uses a few **royalty-free luxury-cabin images** (Unsplash
+license) bundled in `apps/mobile/assets` for a reliable offline cold-run; in production these are
+Supabase Storage URLs. Property *names and locations* are factual and fine to use.
 
 ## 8. Native craft checklist (highest signal-per-minute)
 
@@ -161,8 +181,12 @@ Fri"** as the hero case that the smart sort floats to the top.
 - Deliberately skipped: shared-element transitions, animated reordering, Lottie — diminishing
   returns for the hour.
 
-## 9. Open decision carried into implementation
+**Visual language:** LocalVR's own brand tokens (warm off-white surfaces, sand accent, amber/teal
+status pills, Inter) — see `design-tokens.md`. Implemented app-side with plain `StyleSheet`.
 
-**Workspace shape.** The blueprint locks a _pnpm-workspace monorepo_; the current scaffold is a
-single **npm** Expo app (`ownerview/`). Resolved in `implementation-guide-iteration-1.md` §0 —
-recorded here so the design and the build don't drift.
+## 9. Resolved decision
+
+**Workspace shape — npm workspaces.** The blueprint originally locked pnpm; the scaffold shipped
+on npm, so we keep **npm workspaces** with `packages/core` as a pure-TS workspace package. Same
+shareability proof, no needless cold-run risk. Blueprint decision #8 updated accordingly. Detail
+in `implementation-guide-iteration-1.md` §0.
