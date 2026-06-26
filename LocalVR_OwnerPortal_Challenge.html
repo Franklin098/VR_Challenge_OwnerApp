@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>OwnerView — Product Engineering Challenge</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --color-background-primary: #ffffff;
+      --color-background-secondary: #f5f5f3;
+      --color-text-primary: #1a1a1a;
+      --color-text-secondary: #6b7280;
+      --color-border-tertiary: rgba(0,0,0,0.1);
+      --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+      --border-radius-md: 8px;
+      --border-radius-lg: 12px;
+    }
+
+    body {
+      font-family: var(--font-sans);
+      background: #faf9f7;
+      color: var(--color-text-primary);
+      padding: 3rem 1.5rem;
+      min-height: 100vh;
+    }
+
+    .page {
+      max-width: 720px;
+      margin: 0 auto;
+      background: var(--color-background-primary);
+      border-radius: 16px;
+      padding: 2.5rem 2.5rem;
+      border: 0.5px solid var(--color-border-tertiary);
+    }
+
+    .header { border-bottom: 0.5px solid var(--color-border-tertiary); padding-bottom: 1.5rem; margin-bottom: 1.5rem; }
+    .badge { display: inline-block; font-size: 11px; font-weight: 500; letter-spacing: 0.05em; text-transform: uppercase; padding: 3px 10px; border-radius: 20px; margin-right: 8px; }
+    .badge-gray { background: #f3f4f6; color: #6b7280; border: 0.5px solid rgba(0,0,0,0.1); }
+    .badge-amber { background: #FAEEDA; color: #633806; }
+    .badge-teal { background: #E1F5EE; color: #085041; }
+    h1 { font-size: 22px; font-weight: 500; color: var(--color-text-primary); margin-bottom: 8px; margin-top: 10px; }
+    .subtitle { font-size: 14px; color: var(--color-text-secondary); margin-bottom: 12px; }
+    .meta { display: flex; gap: 16px; font-size: 13px; color: var(--color-text-secondary); margin-top: 12px; flex-wrap: wrap; }
+
+    h2 { font-size: 16px; font-weight: 500; color: var(--color-text-primary); margin-bottom: 10px; }
+    h3 { font-size: 11px; font-weight: 500; color: var(--color-text-secondary); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 10px; }
+    p { font-size: 14px; color: var(--color-text-primary); line-height: 1.7; margin-bottom: 10px; }
+    .section { margin-bottom: 2rem; }
+
+    .card { background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: 12px; padding: 1.25rem; margin-bottom: 1rem; }
+    .card-inner { background: var(--color-background-secondary); border-radius: 8px; padding: 1rem; margin-bottom: 0.75rem; }
+    .card-inner:last-child { margin-bottom: 0; }
+    .card-inner h4 { font-size: 13px; font-weight: 500; color: var(--color-text-primary); margin-bottom: 4px; }
+    .card-inner p { font-size: 13px; color: #6b7280; margin-bottom: 0; line-height: 1.6; }
+
+    .problem-quote { border-left: 2px solid #d4bda2; padding-left: 1rem; margin: 1rem 0; }
+    .problem-quote p { font-size: 13px; color: #6b7280; font-style: italic; margin-bottom: 0; }
+
+    .anchor-list { list-style: none; margin: 0.5rem 0 0; }
+    .anchor-list li { font-size: 13px; color: #6b7280; line-height: 1.7; padding-left: 1rem; position: relative; }
+    .anchor-list li::before { content: "—"; position: absolute; left: 0; color: #d4bda2; }
+
+    .deliverable-num { display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; border-radius: 50%; background: #d4bda2; color: #1f2937; font-size: 11px; font-weight: 500; margin-right: 10px; flex-shrink: 0; margin-top: 2px; }
+    .deliverable-row { display: flex; align-items: flex-start; margin-bottom: 1.25rem; }
+    .deliverable-row > div { flex: 1; }
+    .deliverable-row h4 { font-size: 14px; font-weight: 500; color: var(--color-text-primary); margin-bottom: 3px; }
+    .deliverable-row p { font-size: 13px; color: #6b7280; margin-bottom: 0; }
+
+    .eval-row { display: flex; justify-content: space-between; align-items: center; padding: 9px 0; border-bottom: 0.5px solid rgba(0,0,0,0.08); }
+    .eval-row:last-child { border-bottom: none; }
+    .eval-label { font-size: 13px; color: var(--color-text-primary); }
+    .eval-weight { font-size: 13px; font-weight: 500; color: #6b7280; }
+
+    .time-grid { display: flex; gap: 8px; margin-top: 0.75rem; }
+    .time-block { background: var(--color-background-secondary); border-radius: 8px; padding: 12px 10px; text-align: center; }
+    .time-num { font-size: 20px; font-weight: 500; color: var(--color-text-primary); }
+    .time-unit { font-size: 10px; color: #6b7280; text-transform: uppercase; letter-spacing: 0.06em; }
+    .time-desc { font-size: 11px; color: #6b7280; margin-top: 4px; }
+
+    .submit-box { background: var(--color-background-secondary); border-radius: 8px; padding: 1rem 1.25rem; }
+    .submit-box p { font-size: 13px; color: #6b7280; margin-bottom: 4px; line-height: 1.6; }
+    .submit-box p:last-child { margin-bottom: 0; }
+
+    .divider { border: none; border-top: 0.5px solid rgba(0,0,0,0.08); margin: 1.75rem 0; }
+    a { color: #636466; font-size: 13px; }
+
+    strong { font-weight: 500; }
+  </style>
+</head>
+<body>
+  <div class="page">
+
+    <div class="header">
+      <div style="margin-bottom: 10px;">
+        <span class="badge badge-gray">Take-home challenge</span>
+        <span class="badge badge-amber">~1 hour</span>
+        <span class="badge badge-teal">LocalVR Confidential</span>
+      </div>
+      <h1>OwnerView — Mobile Engineering Challenge</h1>
+      <p class="subtitle">Full-stack Developer (Web + Mobile) · LocalVR</p>
+      <div class="meta">
+        <span>⏱ Target: 45–60 min</span>
+        <span>📦 3 deliverables</span>
+        <span>🎥 Loom required</span>
+        <span>📱 Mobile-first</span>
+      </div>
+    </div>
+
+    <div class="section">
+      <h3>Background</h3>
+      <p>LocalVR manages 550+ luxury vacation rental properties across Breckenridge, Park City, Lake Tahoe, Big Sky, Vail, Telluride, and Florida's 30A. Owners log into our <strong>owner portal</strong> to stay on top of their property, including its <strong>maintenance cases</strong>. When something needs attention at a property, a case is opened, and the owner can view it and act on it.</p>
+      <p>Today owners do this on the <strong>web portal</strong>: they can view a case, approve or deny it, and leave notes. That flow already exists and works. What's missing is a way to do any of it from a phone.</p>
+    </div>
+
+    <div class="section">
+      <h3>The problem</h3>
+      <div class="card">
+        <div class="card-inner">
+          <h4>Maintenance cases are web-only</h4>
+          <p>Owners can only view and act on their cases by logging into the web portal. When a case needs them, they often don't see it until they're back at a laptop, which slows everything down.</p>
+        </div>
+        <div class="card-inner">
+          <h4>No mobile experience</h4>
+          <p>Owners are busy and mobile, often travelling and frequently on a phone rather than a laptop. They expect to open a case, see what's going on, and approve, deny, or respond right from their phone. A wrapped webpage won't cut it; this needs to feel like a real, fast, native app.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <h3>The opportunity</h3>
+      <p>Owners manage their maintenance cases through our <strong>owner portal</strong>, where the cases already live. The owner-facing <strong>mobile app (React Native)</strong> that lets owners do this from a phone is a net-new build.</p>
+      <p>We're not prescribing the solution; that's your job. The cases are already there, and how the app reads and writes them is for you to figure out and explain. For this challenge, you build the <strong>mobile app</strong>. You do not need to build, change, or worry about how cases get into the portal in the first place. Treat them as data that already exists.</p>
+    </div>
+
+    <hr class="divider">
+
+    <div class="section">
+      <h3>Your challenge</h3>
+      <p>Design and prototype a <strong>mobile app for owner-facing maintenance cases</strong>. You have about an hour. Don't try to build everything. Make deliberate choices about what to prototype and be ready to explain why. We care most about how the mobile experience <em>feels</em> and how you'd architect the app to read and write case data.</p>
+      <p style="font-size: 13px; color: #6b7280;">There is no right answer. We're evaluating how you think, how you build, and how you use AI to do both faster.</p>
+
+      <p style="font-size: 13px; color: #6b7280; margin-top: 14px;"><strong>What owners do with cases on web today</strong>, and what we want on mobile (pick what to actually build; you don't need all of it):</p>
+      <ul class="anchor-list">
+        <li>View their maintenance cases for a property</li>
+        <li>Open a case and see its detail and status</li>
+        <li>Approve or deny a case (the key write action)</li>
+        <li>Leave a note on a case</li>
+      </ul>
+      <p style="font-size: 13px; color: #6b7280; margin-top: 14px;">We're not handing you a schema. Decide what a case looks like and what's worth showing on a phone. Just don't reinvent the workflow; owners view, approve, deny, and leave notes.</p>
+    </div>
+
+    <div class="section">
+      <h3>Deliverables</h3>
+
+      <div class="deliverable-row">
+        <span class="deliverable-num">1</span>
+        <div>
+          <h4>System design + architectural approach</h4>
+          <p>A diagram, doc, or structured writeup. The decisions we most want your thinking on: how the mobile app reads and writes case data, and how auth and identity work for an owner on a phone. The cases already exist in the portal, so your job is the path the app takes to them, not where they come from. We'd also like to see where you'd draw the line between code shared with the web portal and code that's mobile-specific. Depth over breadth: sharp thinking on two decisions beats shallow takes on ten.</p>
+        </div>
+      </div>
+
+      <div class="deliverable-row">
+        <span class="deliverable-num">2</span>
+        <div>
+          <h4>Working mobile prototype + shared layer</h4>
+          <p>Build a real, runnable React Native app (Expo preferred). We should be able to open it in Expo Go on a phone or in Expo web, with no app-store build needed. Use whatever data source you want, whether a real backend or seeded/mock data; your call.</p>
+          <p style="margin-top: 8px;">Structure your case types and data-access logic as a <strong>shared TypeScript layer</strong> the app imports, rather than inlining it in the screens, and in your design doc show how a Next.js web surface would consume that exact same layer. You don't need to build the web page; we want to see that the code is genuinely shareable, not duplicated per platform.</p>
+          <p style="margin-top: 8px;">It doesn't have to be complete; it has to be real, runnable, and feel like an app, not a styled webpage.</p>
+        </div>
+      </div>
+
+      <div class="deliverable-row">
+        <span class="deliverable-num">3</span>
+        <div>
+          <h4>Draft roadmap</h4>
+          <p>What does v1 look like? What comes after? What did you deliberately leave out and why? We want to understand how you'd sequence this build and the trade-offs you made.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <h3>Loom submission (required)</h3>
+      <div class="submit-box">
+        <p>Record a short Loom (5 min max) walking us through your prototype and one key architectural decision. We specifically want to hear:</p>
+        <p style="margin-top: 8px;">→ What you built and why you chose it</p>
+        <p>→ One decision that felt hard or ambiguous (bonus if it's where you drew the line between shared and mobile-specific code, or auth)</p>
+        <p>→ How you used AI tools in the process: what you prompted, what it got right, what you had to correct</p>
+      </div>
+    </div>
+
+    <div class="section">
+      <h3>Time breakdown (suggestion)</h3>
+      <div class="time-grid">
+        <div class="time-block" style="flex: 1;">
+          <div class="time-num">10</div>
+          <div class="time-unit">min</div>
+          <div class="time-desc">Orient + plan</div>
+        </div>
+        <div class="time-block" style="flex: 2;">
+          <div class="time-num">35</div>
+          <div class="time-unit">min</div>
+          <div class="time-desc">Build prototype + design doc</div>
+        </div>
+        <div class="time-block" style="flex: 1;">
+          <div class="time-num">10</div>
+          <div class="time-unit">min</div>
+          <div class="time-desc">Loom recording</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <h3>How we evaluate</h3>
+      <div class="card">
+        <div class="eval-row"><span class="eval-label">Product thinking — smart scope decisions for owners?</span><span class="eval-weight">25%</span></div>
+        <div class="eval-row"><span class="eval-label">Architecture — sound data, auth, and shared-vs-platform code decisions?</span><span class="eval-weight">25%</span></div>
+        <div class="eval-row"><span class="eval-label">AI leverage — did you use AI to move faster and think better?</span><span class="eval-weight">25%</span></div>
+        <div class="eval-row"><span class="eval-label">Mobile craft — does it feel native and considered, not a wrapped page?</span><span class="eval-weight">25%</span></div>
+      </div>
+    </div>
+
+    <div class="section">
+      <h3>Submission</h3>
+      <div class="submit-box">
+        <p>Send us a link to your GitHub repo (or zip), your design doc, and your Loom recording. A README is required. Tell us exactly how to run the app (Expo Go QR or Expo web) and how to point it at any data source you used. If we can't run it in under 5 minutes, it doesn't count.</p>
+      </div>
+    </div>
+
+  </div>
+</body>
+</html>
