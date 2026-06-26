@@ -8,6 +8,9 @@
       ],
       "@/assets/*": [
         "./assets/*"
+      ],
+      "@/tokens": [
+        "./designTokens/index.ts"
       ]
     }
   },
